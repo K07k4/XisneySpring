@@ -1,5 +1,6 @@
 package com.erutnecca.xisney.controllers;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,9 +24,8 @@ public class UsuarioController {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
-	// TODO: Comprobar que el email y el DNI no esten registrados antes de crear el usuario
-	
-	@PostMapping(path = "/add") // Map ONLY POST Requests
+	// Añade un usuario
+	@PostMapping(path = "/add")
 	public @ResponseBody ResponseEntity<String> addUsuario(@RequestParam String email, @RequestParam String pass,
 			@RequestParam String dni, @RequestParam String nombre, @RequestParam String apellidos,
 			@RequestParam String fechaNacimiento) {
@@ -37,6 +37,16 @@ public class UsuarioController {
 				+ "Email: " + email + " => " + emailValido(email) + "\n" + "Fecha de nacimiento: " + fechaNacimiento
 				+ " => " + fechaValida(fechaNacimiento) + "\n" + "Pass: " + pass + " => " + passValida(pass);
 
+		// Comprueba si existe el email en la base de datos
+		if(usuarioRepository.findByEmail(email).size() != 0) {			
+			return ResponseEntity.badRequest().body("El email " + email + " ya está registrado");
+		}
+		
+		// Comprueba si existe el dni en la base de datos
+		if(usuarioRepository.findByDni(dni).size() != 0) {			
+			return ResponseEntity.badRequest().body("El dni " + dni + " ya está registrado");
+		}
+		
 		try {
 			if (emailValido(email) && passValida(pass) && dniValido(dni) && nombreValido(nombre)
 					&& nombreValido(apellidos) && fechaValida(fechaNacimiento)) {
@@ -62,23 +72,25 @@ public class UsuarioController {
 		return new ResponseEntity<>("Usuario creado correctamente\n" + usuario.toString(), HttpStatus.OK);
 	}
 
-	@GetMapping(path = "/get") // Map ONLY POST Requests
+	// Obtiene un usuario por ID
+	@GetMapping(path = "/get")
 	public @ResponseBody Optional<Usuario> getUsuario(@RequestParam int id) {
 		return usuarioRepository.findById(id);
 	}
 
+	// Obtiene todos los usuarios
 	@GetMapping(path = "/all")
 	public @ResponseBody Iterable<Usuario> getUsuarios() {
 		return usuarioRepository.findAll();
 	}
-
-	@PostMapping(path = "/activo") // Map ONLY POST Requests
+	
+	// Activa o desactiva un usuario
+	@PostMapping(path = "/activo")
 	public @ResponseBody ResponseEntity<String> desactivarUsuario(@RequestParam Integer id,
 			@RequestParam Boolean estado) {
-		Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
+		Usuario usuario = usuarioRepository.findById(id).orElse(null);
 
-		if (optionalUsuario != null) {
-			Usuario usuario = optionalUsuario.get();
+		if (usuario != null) {
 
 			if (usuario.getActivo() == estado) {
 				return ResponseEntity.badRequest()
@@ -99,55 +111,56 @@ public class UsuarioController {
 
 	}
 
-	
-	//TODO: Comprobar que el email y el dni no están ya almacenados
-	
-	@PostMapping(path = "/modificar") // Map ONLY POST Requests
-	public @ResponseBody ResponseEntity<String> modificarUsuario(@RequestParam Integer id,
-			@RequestParam(name = "email", required = false) String email,
-			@RequestParam(name = "pass", required = false) String pass,
-			@RequestParam(name = "dni", required = false) String dni,
-			@RequestParam(name = "nombre", required = false) String nombre,
-			@RequestParam(name = "apellidos", required = false) String apellidos,
-			@RequestParam(name = "fechaNacimiento", required = false) String fechaNacimiento) {
-
-		Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
-		Usuario usuario = new Usuario();
-
-		String response = "DNI: " + dni + " => " + dniValido(dni) + "\n" + "Nombre: " + nombre + " => "
-				+ nombreValido(nombre) + "\n" + "Apellidos: " + apellidos + " => " + nombreValido(apellidos) + "\n"
-				+ "Email: " + email + " => " + emailValido(email) + "\n" + "Fecha de nacimiento: " + fechaNacimiento
-				+ " => " + fechaValida(fechaNacimiento) + "\n" + "Pass: " + pass + " => " + passValida(pass);
-
-		if (optionalUsuario != null) {
-			usuario = optionalUsuario.get();
+	// Modifica el email del usuario
+	@PostMapping(path = "/modificarEmail")
+	public @ResponseBody ResponseEntity<String> modificarEmail(@RequestParam Integer id,
+			@RequestParam String email) {
+		Usuario usuario = usuarioRepository.findById(id).orElse(null);
+		
+		if(email.equals(usuario.getEmail())) {
+			return ResponseEntity.badRequest().body("El nuevo email es el mismo que el actual");
+		}
+		
+		if(!emailValido(email)) {
+			return ResponseEntity.badRequest().body("El email " + email + " no es válido");
+		}
+				
+		if(usuarioRepository.findByEmail(email).size() == 0) {			
+			usuario.setEmail(email);
+			
+			usuarioRepository.save(usuario);
+			return new ResponseEntity<>("Email cambiado con éxito a " + email, HttpStatus.OK);
 		} else {
-			return ResponseEntity.badRequest().body("No se ha podido encontrar el usuario");
+			return ResponseEntity.badRequest().body("El email " + email + " ya está registrado");
 		}
-
-		try {
-			if (emailValido(email) && passValida(pass) && dniValido(dni) && nombreValido(nombre)
-					&& nombreValido(apellidos) && fechaValida(fechaNacimiento)) {
-				usuario.setEmail(email);
-				usuario.setPass(pass);
-				usuario.setDni(dni);
-				usuario.setNombre(nombre);
-				usuario.setApellidos(apellidos);
-				usuario.setFechaNacimiento(fechaNacimiento);
-
-				usuarioRepository.save(usuario);
-			} else {
-				return ResponseEntity.badRequest().body("No se ha podido modificar el usuario\n" + response);
-
-			}
-
-		} catch (Exception e) {
-			return new ResponseEntity<>("No se ha podido modificar el usuario\n" + response, HttpStatus.BAD_REQUEST);
-		}
-
-		return new ResponseEntity<>("Usuario modificado correctamente\n" + usuario.toString(), HttpStatus.OK);
 	}
-
+	
+	// Modifica el DNI del usuario
+	@PostMapping(path = "/modificarDni")
+	public @ResponseBody ResponseEntity<String> modificarDni(@RequestParam Integer id,
+			@RequestParam String dni) {
+		Usuario usuario = usuarioRepository.findById(id).orElse(null);
+		
+		if(dni.equals(usuario.getDni())) {
+			return ResponseEntity.badRequest().body("El nuevo DNI es el mismo que el actual");
+		}
+		
+		if(!dniValido(dni)) {
+			return ResponseEntity.badRequest().body("El DNI " + dni + " no es válido");
+		}
+				
+		if(usuarioRepository.findByDni(dni).size() == 0) {			
+			usuario.setDni(dni);
+			
+			usuarioRepository.save(usuario);
+			return new ResponseEntity<>("DNI cambiado con éxito a " + dni, HttpStatus.OK);
+		} else {
+			return ResponseEntity.badRequest().body("El DNI " + dni + " ya está registrado");
+		}
+	}
+		
+	
+	
 	// Pattern del email
 	public static final Pattern EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
 			Pattern.CASE_INSENSITIVE);

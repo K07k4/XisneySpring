@@ -4,17 +4,18 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
+
+//TODO: En la base de datos estan declarados como 3 PK, pero aqui funciona bien (y mejor de hecho) con solo una declaracion
+//TODO: Habria que cambiar el resto de clases que tengan una Key relacionada
 
 @Entity
-@IdClass(UsuarioKey.class)
 public class Usuario {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer idUsuario;
-	@Id
+	
+	// Otras PKs
 	private String email;
-	@Id
 	private String dni;
 
 	private String pass, nombre, apellidos;

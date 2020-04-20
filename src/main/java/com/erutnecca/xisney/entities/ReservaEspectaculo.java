@@ -4,23 +4,19 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 
 @Entity
-@IdClass(ReservaEspectaculoKey.class)
 public class ReservaEspectaculo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer idReservaEspectaculo;
-	@Id
+
+	// Otras PKs
 	private Integer idUsuario;
-	@Id
 	private Integer idEvento;
-	@Id
 	private String fechaReserva;
 	
 	private Integer personas;
-	private String codigo;
 	private String fechaCompra;
 	private Boolean consumido;
 
@@ -54,14 +50,6 @@ public class ReservaEspectaculo {
 
 	public void setPersonas(Integer personas) {
 		this.personas = personas;
-	}
-
-	public String getCodigo() {
-		return codigo;
-	}
-
-	public void setCodigo(String codigo) {
-		this.codigo = codigo;
 	}
 
 	public String getFechaReserva() {

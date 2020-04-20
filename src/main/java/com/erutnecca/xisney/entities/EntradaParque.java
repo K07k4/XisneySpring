@@ -13,7 +13,6 @@ public class EntradaParque {
 
 	private Integer idUsuario, idTipoOferta, idParque;
 	private Double precioFinal;
-	private String codigo;
 	private String fechaInicio, fechaFin, fechaCompra;
 	private Boolean consumido;
 
@@ -55,14 +54,6 @@ public class EntradaParque {
 
 	public void setPrecioFinal(Double precioFinal) {
 		this.precioFinal = precioFinal;
-	}
-
-	public String getCodigo() {
-		return codigo;
-	}
-
-	public void setCodigo(String codigo) {
-		this.codigo = codigo;
 	}
 
 	public String getFechaInicio() {

@@ -4,17 +4,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 
 @Entity
-@IdClass(PuntuacionKey.class)
 public class Puntuacion {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer idPuntuacion;
-	@Id
+	
+	// Otras PKs
 	private Integer idUsuario;
-	@Id
 	private Integer idArticulo;
 	
 	private Double puntuacion;

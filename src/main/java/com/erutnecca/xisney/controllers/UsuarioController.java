@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.erutnecca.xisney.controllers.util.Checker;
 import com.erutnecca.xisney.entities.Usuario;
 import com.erutnecca.xisney.repositories.UsuarioRepository;
 
@@ -32,10 +33,10 @@ public class UsuarioController {
 
 		Usuario usuario = new Usuario();
 
-		String response = "DNI: " + dni + " => " + dniValido(dni) + "\n" + "Nombre: " + nombre + " => "
-				+ nombreValido(nombre) + "\n" + "Apellidos: " + apellidos + " => " + nombreValido(apellidos) + "\n"
-				+ "Email: " + email + " => " + emailValido(email) + "\n" + "Fecha de nacimiento: " + fechaNacimiento
-				+ " => " + fechaValida(fechaNacimiento) + "\n" + "Pass: " + pass + " => " + passValida(pass);
+		String response = "DNI: " + dni + " => " + Checker.dniValido(dni) + "\n" + "Nombre: " + nombre + " => "
+				+ Checker.nombreValido(nombre) + "\n" + "Apellidos: " + apellidos + " => " + Checker.nombreValido(apellidos) + "\n"
+				+ "Email: " + email + " => " + Checker.emailValido(email) + "\n" + "Fecha de nacimiento: " + fechaNacimiento
+				+ " => " + Checker.fechaValida(fechaNacimiento) + "\n" + "Pass: " + pass + " => " + Checker.passValida(pass);
 
 		// Comprueba si existe el email en la base de datos
 		if (usuarioRepository.findByEmail(email) != null) {
@@ -48,8 +49,8 @@ public class UsuarioController {
 		}
 
 		try {
-			if (emailValido(email) && passValida(pass) && dniValido(dni) && nombreValido(nombre)
-					&& nombreValido(apellidos) && fechaValida(fechaNacimiento)) {
+			if (Checker.emailValido(email) && Checker.passValida(pass) && Checker.dniValido(dni) && Checker.nombreValido(nombre)
+					&& Checker.nombreValido(apellidos) && Checker.fechaValida(fechaNacimiento)) {
 				usuario.setIdUsuario(0);
 				usuario.setEmail(email);
 				usuario.setPass(pass);
@@ -127,13 +128,13 @@ public class UsuarioController {
 		try {
 			if (usuarioDummy.getIdUsuario() != id) {
 				return ResponseEntity.badRequest().body("El email ya está registrado");
-			} else if (emailValido(email)) {
+			} else if (Checker.emailValido(email)) {
 				usuario.setEmail(email);
 			} else {
 				return ResponseEntity.badRequest().body("El email no es válido");
 			}
 		} catch (Exception e) {
-			if (emailValido(email)) {
+			if (Checker.emailValido(email)) {
 				usuario.setEmail(email);
 			} else {
 				return ResponseEntity.badRequest().body("El email no es válido");
@@ -144,39 +145,39 @@ public class UsuarioController {
 		try {
 			if (usuarioDummy.getIdUsuario() != id) {
 				return ResponseEntity.badRequest().body("El dni ya está registrado");
-			} else if (dniValido(dni)) {
+			} else if (Checker.dniValido(dni)) {
 
 				usuario.setDni(dni);
 			} else {
 				return ResponseEntity.badRequest().body("El dni no es válido");
 			}
 		} catch (Exception e) {
-			if (dniValido(dni)) {
+			if (Checker.dniValido(dni)) {
 				usuario.setDni(dni);
 			} else {
 				return ResponseEntity.badRequest().body("El dni no es válido");
 			}
 		}
 
-		if (!passValida(pass)) {
+		if (!Checker.passValida(pass)) {
 			return ResponseEntity.badRequest().body("La contraseña no es válida");
 		} else {
 			usuario.setPass(pass);
 		}
 
-		if (!nombreValido(nombre)) {
+		if (!Checker.nombreValido(nombre)) {
 			return ResponseEntity.badRequest().body("El nombre no es válido");
 		} else {
 			usuario.setNombre(nombre);
 		}
 
-		if (!nombreValido(apellidos)) {
+		if (!Checker.nombreValido(apellidos)) {
 			return ResponseEntity.badRequest().body("Los apellidos no son válidos");
 		} else {
 			usuario.setApellidos(apellidos);
 		}
 
-		if (!fechaValida(fechaNacimiento)) {
+		if (!Checker.fechaValida(fechaNacimiento)) {
 			return ResponseEntity.badRequest().body("La fecha no es válida");
 		} else {
 			usuario.setFechaNacimiento(fechaNacimiento);
@@ -196,75 +197,6 @@ public class UsuarioController {
 		usuarioRepository.delete(usuario);
 		return ResponseEntity.badRequest().body("Usuario eliminado con éxito");
 	}
-
-	// Pattern del email
-	public static final Pattern EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
-			Pattern.CASE_INSENSITIVE);
-
-	// Pattern del dni
-	public static final Pattern DNI_ADDRESS_REGEX = Pattern.compile(
-			"((([X-Z])|([LM])){1}([-]?)((\\d){7})([-]?)([A-Z]{1}))|((\\d{8})([-]?)([A-Z]))", Pattern.CASE_INSENSITIVE);
-
-	// Pattern de fecha
-	public static final Pattern FECHA_ADDRESS_REGEX = Pattern
-			.compile("^(19|20)\\d\\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$", Pattern.CASE_INSENSITIVE);
-
-	// Pattern generico
-	public static final Pattern NOMBRE_ADDRESS_REGEX = Pattern.compile(
-			"^[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+(\\s*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]*)*[a-zA-ZÀ-ÿ\\u00f1\\u00d1]+$",
-			Pattern.CASE_INSENSITIVE);
-
-	// Pattern de contraseña (Sin ',\,=, ,%) para proteger la base de datos
-	public static final Pattern PASS_ADDRESS_REGEX = Pattern.compile("^((?!'|\\|=| |%).)*$", Pattern.CASE_INSENSITIVE);
-
-	// Comprueba el string con un pattern
-	public static boolean validar(Pattern pattern, String str) {
-		Matcher matcher = pattern.matcher(str);
-		return (matcher.find() && !str.isEmpty());
-	}
-
-	// Comprueba que el email sea valido
-	public static boolean emailValido(String emailStr) {
-		return validar(EMAIL_ADDRESS_REGEX, emailStr);
-	}
-
-	// Comprueba que el dni sea valido
-	public static boolean dniValido(String dniStr) {
-		boolean flag = false;
-
-		if (validar(DNI_ADDRESS_REGEX, dniStr)) {
-			String letra = "";
-			String[] asignacionLetra = { "T", "R", "W", "A", "G", "M", "Y", "F", "P", "D", "X", "B", "N", "J", "Z", "S",
-					"Q", "V", "H", "L", "C", "K", "E" };
-			int numeros = Integer.valueOf(dniStr.substring(0, 8));
-
-			int resto = numeros % 23;
-			letra = asignacionLetra[resto];
-
-			if (letra.equals(dniStr.substring(8))) {
-				flag = true;
-			}
-		}
-		return flag;
-	}
-
-	// Comprueba que tenga caracteres validos
-	public static boolean fechaValida(String fechaStr) {
-		return validar(FECHA_ADDRESS_REGEX, fechaStr);
-	}
-
-	// Comprueba que tenga caracteres validos
-	public static boolean nombreValido(String nombreStr) {
-		return validar(NOMBRE_ADDRESS_REGEX, nombreStr);
-	}
-
-	// Comprueba que tenga caracteres validos
-	public static boolean passValida(String passStr) {
-		if (passStr.length() >= 6) {
-			return validar(PASS_ADDRESS_REGEX, passStr);
-		} else {
-			return false;
-		}
-	}
+	
 
 }

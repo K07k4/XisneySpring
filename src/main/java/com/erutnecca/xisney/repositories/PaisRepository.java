@@ -8,5 +8,5 @@ import com.erutnecca.xisney.entities.Pais;
 // CRUD refers Create, Read, Update, Delete
 
 public interface PaisRepository extends CrudRepository<Pais, Integer> {
-
+	Pais findByNombre(String nombre);
 }

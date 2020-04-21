@@ -11,6 +11,8 @@ public class Provincia {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer idProvincia;
 
+	private Integer idPais;
+
 	private String nombre;
 
 	public Integer getIdProvincia() {
@@ -19,6 +21,14 @@ public class Provincia {
 
 	public void setIdProvincia(Integer idProvincia) {
 		this.idProvincia = idProvincia;
+	}
+
+	public Integer getIdPais() {
+		return idPais;
+	}
+
+	public void setIdPais(Integer idPais) {
+		this.idPais = idPais;
 	}
 
 	public String getNombre() {

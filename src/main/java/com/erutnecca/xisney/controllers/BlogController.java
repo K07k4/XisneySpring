@@ -1,9 +1,5 @@
 package com.erutnecca.xisney.controllers;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.erutnecca.xisney.controllers.util.Fecha;
 import com.erutnecca.xisney.entities.EntradaBlog;
-import com.erutnecca.xisney.entities.Usuario;
 import com.erutnecca.xisney.repositories.EntradaBlogRepository;
 
 @Controller
@@ -28,7 +23,7 @@ public class BlogController {
 	@Autowired
 	private EntradaBlogRepository entradaBlogRepository;
 
-	
+	// Crea una entrada de blog
 	@PostMapping(path = "/add")
 	public @ResponseBody ResponseEntity<String> addEntradaBlog(@RequestParam String titulo, @RequestParam String contenido) {
 
@@ -101,6 +96,7 @@ public class BlogController {
 		return new ResponseEntity<>("Entrada de blog modificada correctamente", HttpStatus.OK);
 	}
 	
+	// Elimina la entrada del blog según ID
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteEntradaBlog(@RequestParam Integer id) {
 		EntradaBlog entradaBlog= entradaBlogRepository.findById(id).orElse(null);

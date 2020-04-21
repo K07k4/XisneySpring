@@ -112,7 +112,7 @@ public class UsuarioController {
 
 	}
 
-	// TODO: Modificar todos los parámetros menos activo
+	// Modifica todos los campos del usuario. Se entiende que si no cambia, se recibe el mismo
 	@PostMapping(path = "/modificar")
 	public @ResponseBody ResponseEntity<String> modificarUsuario(@RequestParam Integer id, @RequestParam String nombre,
 			@RequestParam String apellidos, @RequestParam String email, @RequestParam String pass,

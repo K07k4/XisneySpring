@@ -186,13 +186,16 @@ public class UsuarioController {
 
 	}
 
-	// TODO: Hay que eliminar en cascada
 	// Elimina el usuario
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteUsuario(@RequestParam Integer id) {
 		Usuario usuario = usuarioRepository.findById(id).orElse(null);
 
+		try {
 		usuarioRepository.delete(usuario);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("No se ha podido encontrar el usuario");
+		}
 		return ResponseEntity.badRequest().body("Usuario eliminado con éxito");
 	}
 	

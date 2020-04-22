@@ -94,9 +94,10 @@ public class ProvinciaController {
 		return new ResponseEntity<>("Provincia modificada correctamente", HttpStatus.OK);
 	}
 
-	// Elimina la entrada del blog según ID
+	// Elimina la provincia segun su ID
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteProvincia(@RequestParam Integer id) {
+		
 		Provincia provincia = provinciaRepository.findById(id).orElse(null);
 
 		if (provincia == null) {

@@ -30,17 +30,17 @@ public class PaisController {
 		this.paisRepository = paisRepository;
 		this.provinciaRepository = provinciaRepository;
 	}
-	
+
 	// Crea un pais
 	@PostMapping(path = "/add")
-	public @ResponseBody ResponseEntity<String> addEntradaBlog(@RequestParam String nombre) {
+	public @ResponseBody ResponseEntity<String> addPais(@RequestParam String nombre) {
 
 		Pais pais = new Pais();
 
 		pais.setIdPais(0);
 
 		Pais paisDummy = paisRepository.findByNombre(nombre);
-		if(paisDummy == null) {
+		if (paisDummy == null) {
 			pais.setNombre(nombre);
 		} else {
 			return ResponseEntity.badRequest().body("El país ya está registrado");
@@ -61,6 +61,12 @@ public class PaisController {
 	@GetMapping(path = "/all")
 	public @ResponseBody Iterable<Pais> getAllPaises() {
 		return paisRepository.findAll();
+	}
+	
+	// Obtiene todas las provincias del país según su ID
+	@GetMapping(path = "/getProvincias")
+	public @ResponseBody List<Provincia> getProvincias(@RequestParam int id) {
+		return provinciaRepository.findByIdPais(id);
 	}
 
 	// Modifica el nombre del país según el ID
@@ -84,8 +90,7 @@ public class PaisController {
 		return new ResponseEntity<>("País modificado correctamente", HttpStatus.OK);
 	}
 
-	// TODO: Eliminar en cascada las provincias
-	// Elimina el país según el ID
+	// Elimina el país según el ID y sus provincias en cascada
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deletePais(@RequestParam Integer id) {
 		Pais pais = paisRepository.findById(id).orElse(null);
@@ -96,13 +101,6 @@ public class PaisController {
 
 		paisRepository.delete(pais);
 		return ResponseEntity.badRequest().body("País eliminado con éxito");
-	}
-	
-	//TODO: Obtener provincias del país
-	// Obtiene todas las provincias del país según su ID
-	@GetMapping(path = "/getProvincias")
-	public @ResponseBody List<Provincia> getProvincias(@RequestParam int id) {
-		return provinciaRepository.findByIdPais(id);
 	}
 
 }

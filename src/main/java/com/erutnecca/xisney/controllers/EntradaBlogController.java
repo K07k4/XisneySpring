@@ -19,7 +19,7 @@ import com.erutnecca.xisney.repositories.EntradaBlogRepository;
 
 @Controller
 @RequestMapping(path = "/blog")
-public class BlogController {
+public class EntradaBlogController {
 	@Autowired
 	private EntradaBlogRepository entradaBlogRepository;
 

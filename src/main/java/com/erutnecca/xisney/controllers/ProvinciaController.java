@@ -97,7 +97,7 @@ public class ProvinciaController {
 	// Elimina la provincia segun su ID
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteProvincia(@RequestParam Integer id) {
-		
+
 		Provincia provincia = provinciaRepository.findById(id).orElse(null);
 
 		if (provincia == null) {

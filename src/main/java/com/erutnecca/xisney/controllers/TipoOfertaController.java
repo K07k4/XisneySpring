@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.erutnecca.xisney.entities.Provincia;
 import com.erutnecca.xisney.entities.TipoOferta;
 import com.erutnecca.xisney.repositories.TipoOfertaRepository;
 
@@ -46,8 +45,8 @@ public class TipoOfertaController {
 			return ResponseEntity.badRequest().body("El porcentaje debe estar entre 0% y 100%");
 		}
 
-		if (dias <= 0) {
-			return ResponseEntity.badRequest().body("El número de días debe ser mínimo 1");
+		if (dias < 0) { // Si los días son 0, significa que es aplicable a un número ilimitado de días
+			return ResponseEntity.badRequest().body("El número de días debe ser mínimo 0");
 		}
 
 		tipoOferta.setNombre(nombre);
@@ -115,11 +114,11 @@ public class TipoOfertaController {
 
 		return new ResponseEntity<>("Tipo de oferta modificado correctamente", HttpStatus.OK);
 	}
-	
+
 	// Elimina el tipo de oferta segun su ID
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteTipoOferta(@RequestParam Integer id) {
-		
+
 		TipoOferta tipoOferta = tipoOfertaRepository.findById(id).orElse(null);
 
 		if (tipoOferta == null) {

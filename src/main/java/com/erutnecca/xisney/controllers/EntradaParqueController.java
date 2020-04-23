@@ -155,7 +155,7 @@ public class EntradaParqueController {
 	}
 
 	// Consume la entrada, pasando de false a true
-	@GetMapping(path = "/consumir")
+	@PostMapping(path = "/consumir")
 	public @ResponseBody ResponseEntity<String> consumirEntrada(@RequestParam Integer id) {
 		EntradaParque entradaParque = entradaParqueRepository.findById(id).orElse(null);
 
@@ -168,6 +168,7 @@ public class EntradaParqueController {
 		}
 
 		entradaParque.setConsumido(true);
+		entradaParqueRepository.save(entradaParque);
 		return new ResponseEntity<>("Se ha consumido la entrada correctamente", HttpStatus.OK);
 	}
 

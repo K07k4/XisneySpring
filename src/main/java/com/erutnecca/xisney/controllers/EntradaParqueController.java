@@ -183,7 +183,7 @@ public class EntradaParqueController {
 		}
 
 		entradaParqueRepository.delete(entradaParque);
-		return ResponseEntity.badRequest().body("Entrada eliminada con éxito");
+		return new ResponseEntity<>("Se ha eliminado la entrada correctamente", HttpStatus.OK);
 	}
 
 }

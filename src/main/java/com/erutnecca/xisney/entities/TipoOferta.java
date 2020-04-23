@@ -12,7 +12,7 @@ public class TipoOferta {
 	private Integer idTipoOferta;
 
 	private String nombre, descripcion;
-	private Double cantidad, pocentaje;
+	private Double cantidad, porcentaje;
 	private Integer dias;
 
 	public Integer getIdTipoOferta() {
@@ -47,12 +47,12 @@ public class TipoOferta {
 		this.cantidad = cantidad;
 	}
 
-	public Double getPocentaje() {
-		return pocentaje;
+	public Double getPorcentaje() {
+		return porcentaje;
 	}
 
-	public void setPocentaje(Double pocentaje) {
-		this.pocentaje = pocentaje;
+	public void setPorcentaje(Double porcentaje) {
+		this.porcentaje = porcentaje;
 	}
 
 	public Integer getDias() {

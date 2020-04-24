@@ -1,5 +1,7 @@
 package com.erutnecca.xisney.repositories;
 
+import java.util.Optional;
+
 import org.springframework.data.repository.CrudRepository;
 
 import com.erutnecca.xisney.entities.TipoArticulo;
@@ -8,5 +10,5 @@ import com.erutnecca.xisney.entities.TipoArticulo;
 // CRUD refers Create, Read, Update, Delete
 
 public interface TipoArticuloRepository extends CrudRepository<TipoArticulo, Integer> {
-
+	Optional<TipoArticulo> findByNombre(String nombre);
 }

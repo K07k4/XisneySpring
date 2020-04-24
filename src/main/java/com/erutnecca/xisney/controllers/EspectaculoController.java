@@ -95,7 +95,7 @@ public class EspectaculoController {
         Espectaculo espectaculo = espectaculoRepository.findById(id).orElse(null);
 
         if (espectaculo == null) {
-            return ResponseEntity.badRequest().body("No se encuentra el espectaclo con ID " + id.toString());
+            return ResponseEntity.badRequest().body("No se encuentra el espectaculo con ID " + id.toString());
         }
 
         espectaculoRepository.delete(espectaculo);

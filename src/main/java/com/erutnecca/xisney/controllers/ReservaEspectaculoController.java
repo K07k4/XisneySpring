@@ -77,7 +77,7 @@ public class ReservaEspectaculoController {
         try {
             thisFechaReserva = Fecha.stringFecha(fechaReserva);
         } catch (ParseException e) {
-            return ResponseEntity.badRequest().body("La fecha de reserva no es correctas");
+            return ResponseEntity.badRequest().body("La fecha de reserva no es correcta");
         }
 
         if (thisFechaReserva.before(fechaInicio) || thisFechaReserva.after(fechaFin)) {

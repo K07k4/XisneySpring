@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface ReservaEspectaculoRepository extends CrudRepository<ReservaEspectaculo, Integer> {
     List<ReservaEspectaculo> findByIdEvento(int id);
-
     List<ReservaEspectaculo> findByIdUsuario(int id);
 
 }

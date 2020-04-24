@@ -75,5 +75,4 @@ public class TipoArticuloController {
 		return ResponseEntity.badRequest().body("Tipo de artículo eliminado con éxito");
 	}
 
-	// TODO: Obtener todos los artículos del tipo de artículo
 }

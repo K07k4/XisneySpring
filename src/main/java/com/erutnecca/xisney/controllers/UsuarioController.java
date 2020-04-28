@@ -12,6 +12,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import com.sun.mail.smtp.SMTPTransport;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.util.Date;
+import java.util.Properties;
 
 import com.erutnecca.xisney.controllers.util.Checker;
 import com.erutnecca.xisney.entities.Usuario;
@@ -197,6 +206,78 @@ public class UsuarioController {
 			return ResponseEntity.badRequest().body("No se ha podido encontrar el usuario");
 		}
 		return ResponseEntity.badRequest().body("Usuario eliminado con éxito");
+	}
+	
+	// Recuperar contraseña
+	@PostMapping(path = "/recuperarPass")
+	public @ResponseBody ResponseEntity<String> recuperarPass(@RequestParam String email) {
+		Usuario usuario = usuarioRepository.findByEmail(email);
+		
+		if(usuario == null) {
+			return ResponseEntity.badRequest().body("No se ha podido encontrar el usuario");
+		}
+		
+		final String SMTP_SERVER = "smtp.office365.com";
+	    final String USERNAME = "xisneyteam@outlook.com";
+	    final String PASSWORD = "cesurmola-";
+
+	    final String EMAIL_FROM = "xisneyteam@outlook.com";
+	    final String EMAIL_TO = usuario.getEmail();
+	    final String EMAIL_TO_CC = "";
+
+	    final String EMAIL_SUBJECT = "Recuperación de contraseña";
+	    final String EMAIL_TEXT = "Buenas, " + usuario.getNombre() + "\nSu contraseña es: " + usuario.getPass() +"\n\n\nwww.xisney.com";
+		
+		Properties prop = System.getProperties();
+        prop.put("mail.smtp.host", SMTP_SERVER); //optional, defined in SMTPTransport
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.port", "587"); // default port 25
+        prop.put("mail.smtp.starttls.enable","true");
+        prop.put("mail.smtp.auth", "true");
+        
+        Session session = Session.getInstance(prop, null);
+        Message msg = new MimeMessage(session);
+
+        try {
+
+			// from
+            msg.setFrom(new InternetAddress(EMAIL_FROM));
+
+			// to
+            msg.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(EMAIL_TO, false));
+
+			// cc
+            msg.setRecipients(Message.RecipientType.CC,
+                    InternetAddress.parse(EMAIL_TO_CC, false));
+
+			// subject
+            msg.setSubject(EMAIL_SUBJECT);
+
+			// content
+            msg.setText(EMAIL_TEXT);
+
+            msg.setSentDate(new Date());
+
+			// Get SMTPTransport
+            SMTPTransport t = (SMTPTransport) session.getTransport("smtp");
+
+			// connect
+            t.connect(SMTP_SERVER, USERNAME, PASSWORD);
+
+			// send
+            t.sendMessage(msg, msg.getAllRecipients());
+
+            System.out.println("Response: " + t.getLastServerResponse());
+
+            t.close();
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("No se ha podido enviar el email");
+        }
+
+		return ResponseEntity.badRequest().body("Email con contraseña enviado con éxito");
 	}
 	
 

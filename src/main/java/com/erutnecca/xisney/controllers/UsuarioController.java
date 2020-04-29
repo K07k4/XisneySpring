@@ -205,7 +205,7 @@ public class UsuarioController {
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body("No se ha podido encontrar el usuario");
 		}
-		return ResponseEntity.badRequest().body("Usuario eliminado con éxito");
+		return new ResponseEntity<>("Usuario eliminado con éxito", HttpStatus.OK);
 	}
 	
 	// Recuperar contraseña
@@ -217,6 +217,10 @@ public class UsuarioController {
 			return ResponseEntity.badRequest().body("No se ha podido encontrar el usuario");
 		}
 		
+		if(usuario.getActivo() == false) {
+			return ResponseEntity.badRequest().body("El usuario está desactivado");
+		}
+		
 		final String SMTP_SERVER = "smtp.office365.com";
 	    final String USERNAME = "xisneyteam@outlook.com";
 	    final String PASSWORD = "cesurmola-";
@@ -224,7 +228,7 @@ public class UsuarioController {
 	    final String EMAIL_FROM = "xisneyteam@outlook.com";
 	    final String EMAIL_TO = usuario.getEmail();
 	    final String EMAIL_TO_CC = "";
-
+	    
 	    final String EMAIL_SUBJECT = "Recuperación de contraseña";
 	    final String EMAIL_TEXT = "Buenas, " + usuario.getNombre() + "\nSu contraseña es: " + usuario.getPass() +"\n\n\nwww.xisney.com";
 		
@@ -277,8 +281,30 @@ public class UsuarioController {
             return ResponseEntity.badRequest().body("No se ha podido enviar el email");
         }
 
-		return ResponseEntity.badRequest().body("Email con contraseña enviado con éxito");
+        return new ResponseEntity<>("Email con contraseña enviado con éxito", HttpStatus.OK);
 	}
 	
+	
+	@PostMapping(path = "/login")
+	public @ResponseBody ResponseEntity<String> login(@RequestParam String email, @RequestParam String pass) {
+		Usuario usuario = usuarioRepository.findByEmail(email);
+		
+		
+		
+		if(usuario == null) {
+			return ResponseEntity.badRequest().body("No se ha podido encontrar el usuario");
+		}
+		
+		if(usuario.getActivo() == false) {
+			return ResponseEntity.badRequest().body("El usuario está desactivado");
+		}
+		
+		if(usuario.getPass().equals(pass)) {
+			return new ResponseEntity<>("El email coincide con la contraseña", HttpStatus.OK);
+		} else {
+			return ResponseEntity.badRequest().body("El email existe, pero la contraseña no coincide");
+		}
+		
+	}
 
 }

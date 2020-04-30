@@ -15,8 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.erutnecca.xisney.entities.Articulo;
+import com.erutnecca.xisney.entities.Puntuacion;
+import com.erutnecca.xisney.entities.Usuario;
 import com.erutnecca.xisney.repositories.ArticuloRepository;
+import com.erutnecca.xisney.repositories.PuntuacionRepository;
 import com.erutnecca.xisney.repositories.TipoArticuloRepository;
+import com.erutnecca.xisney.repositories.UsuarioRepository;
 
 @Controller
 @RequestMapping(path = "/articulo")
@@ -25,10 +29,15 @@ public class ArticuloController {
 	@Autowired
 	ArticuloRepository articuloRepository;
 	TipoArticuloRepository tipoArticuloRepository;
+	PuntuacionRepository puntuacionRepository;
+	UsuarioRepository usuarioRepository;
 
-	ArticuloController(ArticuloRepository articuloRepository, TipoArticuloRepository tipoArticuloRepository) {
+	ArticuloController(ArticuloRepository articuloRepository, TipoArticuloRepository tipoArticuloRepository,
+			PuntuacionRepository puntuacionRepository, UsuarioRepository usuarioRepository) {
 		this.articuloRepository = articuloRepository;
 		this.tipoArticuloRepository = tipoArticuloRepository;
+		this.puntuacionRepository = puntuacionRepository;
+		this.usuarioRepository = usuarioRepository;
 	}
 
 	// Crea un artículo
@@ -135,6 +144,71 @@ public class ArticuloController {
 
 		articuloRepository.delete(articulo);
 		return ResponseEntity.badRequest().body("Artículo eliminado con éxito");
+	}
+
+	@PostMapping(path = "/puntuar")
+	public @ResponseBody ResponseEntity<String> puntuar(@RequestParam("idArticulo") int idArticulo,
+			@RequestParam("idUsuario") int idUsuario, @RequestParam("puntuacion") Double puntuacion) {
+		boolean puntuado = false;
+
+		if (puntuacion < 0.0 || puntuacion > 5.0) {
+			return ResponseEntity.badRequest().body("La puntuacion debe ser mínimo 0 y máximo 5");
+		}
+
+		Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
+
+		if (usuario == null) {
+			return ResponseEntity.badRequest().body("No se encuentra el usuario con ID " + idUsuario);
+		}
+
+		Articulo articulo = articuloRepository.findById(idArticulo).orElse(null);
+
+		if (articulo == null) {
+			return ResponseEntity.badRequest().body("No se encuentra el artículo con ID " + idArticulo);
+		}
+
+		Puntuacion puntuacionItem = new Puntuacion();
+
+		puntuacionItem.setIdPuntuacion(0);
+		puntuacionItem.setIdArticulo(idArticulo);
+		puntuacionItem.setIdUsuario(idUsuario);
+		puntuacionItem.setPuntuacion(puntuacion);
+
+		Puntuacion puntuacionExistente = puntuacionRepository.findByIdUsuarioAndIdArticulo(idUsuario, idArticulo);
+
+		if (puntuacionExistente != null) {
+			puntuado = true;
+
+			puntuacionItem.setIdPuntuacion(puntuacionExistente.getIdPuntuacion());
+		}
+
+		puntuacionRepository.save(puntuacionItem);
+
+		List<Puntuacion> listPuntuaciones = puntuacionRepository.findByIdArticulo(idArticulo);
+
+		double suma = puntuacion;
+		int numeroPuntuaciones = articulo.getNumeroPuntuaciones();
+
+		for (int i = 0; i < numeroPuntuaciones; i++) {
+			if (listPuntuaciones.get(i).getIdUsuario() != idUsuario) {
+				suma += listPuntuaciones.get(i).getPuntuacion();
+			}
+		}
+
+		// Si el usuario ya ha puntuado esta receta no se sumará al número total
+		if (!puntuado) {
+			numeroPuntuaciones++;
+		}
+
+		articulo.setNumeroPuntuaciones(numeroPuntuaciones);
+
+		double resultado = suma / numeroPuntuaciones;
+
+		articulo.setPuntuacionMedia(resultado);
+
+		articuloRepository.save(articulo);
+
+		return new ResponseEntity<>("Puntuación realizada", HttpStatus.OK);
 	}
 
 }

@@ -8,5 +8,5 @@ import com.erutnecca.xisney.entities.Recibo;
 // CRUD refers Create, Read, Update, Delete
 
 public interface ReciboRepository extends CrudRepository<Recibo, Integer> {
-
+	Recibo findByIdUsuarioAndPrecioTotalAndFechaCompra(int idUsuario, double precioTotal, String fechaCompra);
 }

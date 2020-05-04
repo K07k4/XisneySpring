@@ -17,6 +17,10 @@ public class Fecha {
 	public static String actualPrecisa() {
 		return fecha("yyyy-MM-dd HH:mm:ss");
 	}
+	
+	public static String actualMuyPrecisa() {
+		return fecha("yyyy-MM-dd HH:mm:ss.SSS");
+	}
 
 	public static String actual() {
 		return fecha("yyyy-MM-dd");

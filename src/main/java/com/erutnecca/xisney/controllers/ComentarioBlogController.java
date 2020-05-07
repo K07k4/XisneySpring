@@ -44,13 +44,12 @@ public class ComentarioBlogController {
 
 		comentarioBlog.setIdComentarioBlog(0);
 		String fecha = Fecha.actualPrecisa();
-		
-		
-		if(entradaBlogRepository.findById(idEntradaBlog).orElse(null) == null) {
+
+		if (entradaBlogRepository.findById(idEntradaBlog).orElse(null) == null) {
 			return ResponseEntity.badRequest().body("No existe entrada de blog con ID " + idEntradaBlog);
 		}
-		
-		if(usuarioRepository.findById(idUsuario).orElse(null) == null) {
+
+		if (usuarioRepository.findById(idUsuario).orElse(null) == null) {
 			return ResponseEntity.badRequest().body("No existe usuario ID " + idUsuario);
 		}
 
@@ -65,7 +64,7 @@ public class ComentarioBlogController {
 		} else {
 			return ResponseEntity.badRequest().body("La fecha no se ha generado correctamente");
 		}
-		
+
 		comentarioBlog.setIdEntradaBlog(idEntradaBlog);
 		comentarioBlog.setIdUsuario(idUsuario);
 		comentarioBlog.setComentario(comentario);
@@ -88,7 +87,7 @@ public class ComentarioBlogController {
 	public @ResponseBody Iterable<ComentarioBlog> getEntradasBlog() {
 		return comentarioBlogRepository.findAll();
 	}
-	
+
 	@GetMapping(path = "/getComentariosDeEntrada")
 	public @ResponseBody List<ComentarioBlog> getComentariosDeEntrada(Integer id) {
 		return comentarioBlogRepository.findByIdEntradaBlog(id);
@@ -100,7 +99,7 @@ public class ComentarioBlogController {
 			@RequestParam String comentario) {
 
 		ComentarioBlog comentarioBlog = comentarioBlogRepository.findById(id).orElse(null);
-		
+
 		String fecha = Fecha.actualPrecisa();
 
 		if (comentarioBlog == null) {
@@ -115,7 +114,7 @@ public class ComentarioBlogController {
 
 		comentarioBlog.setEditado(true);
 		comentarioBlog.setFecha(fecha);
-		
+
 		comentarioBlogRepository.save(comentarioBlog);
 
 		return new ResponseEntity<>("Comentario modificado correctamente", HttpStatus.OK);

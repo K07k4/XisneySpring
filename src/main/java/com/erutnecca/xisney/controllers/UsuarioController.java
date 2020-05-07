@@ -41,9 +41,10 @@ public class UsuarioController {
 		Usuario usuario = new Usuario();
 
 		String response = "DNI: " + dni + " => " + Checker.dniValido(dni) + "\n" + "Nombre: " + nombre + " => "
-				+ Checker.nombreValido(nombre) + "\n" + "Apellidos: " + apellidos + " => " + Checker.nombreValido(apellidos) + "\n"
-				+ "Email: " + email + " => " + Checker.emailValido(email) + "\n" + "Fecha de nacimiento: " + fechaNacimiento
-				+ " => " + Checker.fechaValida(fechaNacimiento) + "\n" + "Pass: " + pass + " => " + Checker.passValida(pass);
+				+ Checker.nombreValido(nombre) + "\n" + "Apellidos: " + apellidos + " => "
+				+ Checker.nombreValido(apellidos) + "\n" + "Email: " + email + " => " + Checker.emailValido(email)
+				+ "\n" + "Fecha de nacimiento: " + fechaNacimiento + " => " + Checker.fechaValida(fechaNacimiento)
+				+ "\n" + "Pass: " + pass + " => " + Checker.passValida(pass);
 
 		// Comprueba si existe el email en la base de datos
 		if (usuarioRepository.findByEmail(email) != null) {
@@ -56,8 +57,9 @@ public class UsuarioController {
 		}
 
 		try {
-			if (Checker.emailValido(email) && Checker.passValida(pass) && Checker.dniValido(dni) && Checker.nombreValido(nombre)
-					&& Checker.nombreValido(apellidos) && Checker.fechaValida(fechaNacimiento)) {
+			if (Checker.emailValido(email) && Checker.passValida(pass) && Checker.dniValido(dni)
+					&& Checker.nombreValido(nombre) && Checker.nombreValido(apellidos)
+					&& Checker.fechaValida(fechaNacimiento)) {
 				usuario.setIdUsuario(0);
 				usuario.setEmail(email);
 				usuario.setPass(pass);
@@ -120,7 +122,8 @@ public class UsuarioController {
 
 	}
 
-	// Modifica todos los campos del usuario. Se entiende que si no cambia, se recibe el mismo
+	// Modifica todos los campos del usuario. Se entiende que si no cambia, se
+	// recibe el mismo
 	@PostMapping(path = "/modificar")
 	public @ResponseBody ResponseEntity<String> modificarUsuario(@RequestParam Integer id, @RequestParam String nombre,
 			@RequestParam String apellidos, @RequestParam String email, @RequestParam String pass,
@@ -201,110 +204,106 @@ public class UsuarioController {
 		Usuario usuario = usuarioRepository.findById(id).orElse(null);
 
 		try {
-		usuarioRepository.delete(usuario);
+			usuarioRepository.delete(usuario);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body("No se ha podido encontrar el usuario");
 		}
 		return new ResponseEntity<>("Usuario eliminado con éxito", HttpStatus.OK);
 	}
-	
+
 	// Recuperar contraseña
 	@PostMapping(path = "/recuperarPass")
 	public @ResponseBody ResponseEntity<String> recuperarPass(@RequestParam String email) {
 		Usuario usuario = usuarioRepository.findByEmail(email);
-		
-		if(usuario == null) {
+
+		if (usuario == null) {
 			return ResponseEntity.badRequest().body("No se ha podido encontrar el usuario");
 		}
-		
-		if(usuario.getActivo() == false) {
+
+		if (usuario.getActivo() == false) {
 			return ResponseEntity.badRequest().body("El usuario está desactivado");
 		}
-		
+
 		final String SMTP_SERVER = "smtp.office365.com";
-	    final String USERNAME = "xisneyteam@outlook.com";
-	    final String PASSWORD = "cesurmola-";
+		final String USERNAME = "xisneyteam@outlook.com";
+		final String PASSWORD = "cesurmola-";
 
-	    final String EMAIL_FROM = "xisneyteam@outlook.com";
-	    final String EMAIL_TO = usuario.getEmail();
-	    final String EMAIL_TO_CC = "";
-	    
-	    final String EMAIL_SUBJECT = "Recuperación de contraseña";
-	    final String EMAIL_TEXT = "Buenas, " + usuario.getNombre() + "\nSu contraseña es: " + usuario.getPass() +"\n\n\nwww.xisney.com";
-		
+		final String EMAIL_FROM = "xisneyteam@outlook.com";
+		final String EMAIL_TO = usuario.getEmail();
+		final String EMAIL_TO_CC = "";
+
+		final String EMAIL_SUBJECT = "Recuperación de contraseña";
+		final String EMAIL_TEXT = "Buenas, " + usuario.getNombre() + "\nSu contraseña es: " + usuario.getPass()
+				+ "\n\n\nwww.xisney.com";
+
 		Properties prop = System.getProperties();
-        prop.put("mail.smtp.host", SMTP_SERVER); //optional, defined in SMTPTransport
-        prop.put("mail.smtp.auth", "true");
-        prop.put("mail.smtp.port", "587"); // default port 25
-        prop.put("mail.smtp.starttls.enable","true");
-        prop.put("mail.smtp.auth", "true");
-        
-        Session session = Session.getInstance(prop, null);
-        Message msg = new MimeMessage(session);
+		prop.put("mail.smtp.host", SMTP_SERVER); // optional, defined in SMTPTransport
+		prop.put("mail.smtp.auth", "true");
+		prop.put("mail.smtp.port", "587"); // default port 25
+		prop.put("mail.smtp.starttls.enable", "true");
+		prop.put("mail.smtp.auth", "true");
 
-        try {
+		Session session = Session.getInstance(prop, null);
+		Message msg = new MimeMessage(session);
+
+		try {
 
 			// from
-            msg.setFrom(new InternetAddress(EMAIL_FROM));
+			msg.setFrom(new InternetAddress(EMAIL_FROM));
 
 			// to
-            msg.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse(EMAIL_TO, false));
+			msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(EMAIL_TO, false));
 
 			// cc
-            msg.setRecipients(Message.RecipientType.CC,
-                    InternetAddress.parse(EMAIL_TO_CC, false));
+			msg.setRecipients(Message.RecipientType.CC, InternetAddress.parse(EMAIL_TO_CC, false));
 
 			// subject
-            msg.setSubject(EMAIL_SUBJECT);
+			msg.setSubject(EMAIL_SUBJECT);
 
 			// content
-            msg.setText(EMAIL_TEXT);
+			msg.setText(EMAIL_TEXT);
 
-            msg.setSentDate(new Date());
+			msg.setSentDate(new Date());
 
 			// Get SMTPTransport
-            SMTPTransport t = (SMTPTransport) session.getTransport("smtp");
+			SMTPTransport t = (SMTPTransport) session.getTransport("smtp");
 
 			// connect
-            t.connect(SMTP_SERVER, USERNAME, PASSWORD);
+			t.connect(SMTP_SERVER, USERNAME, PASSWORD);
 
 			// send
-            t.sendMessage(msg, msg.getAllRecipients());
+			t.sendMessage(msg, msg.getAllRecipients());
 
-            System.out.println("Response: " + t.getLastServerResponse());
+			System.out.println("Response: " + t.getLastServerResponse());
 
-            t.close();
+			t.close();
 
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("No se ha podido enviar el email");
-        }
+		} catch (MessagingException e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body("No se ha podido enviar el email");
+		}
 
-        return new ResponseEntity<>("Email con contraseña enviado con éxito", HttpStatus.OK);
+		return new ResponseEntity<>("Email con contraseña enviado con éxito", HttpStatus.OK);
 	}
-	
-	
+
 	@PostMapping(path = "/login")
 	public @ResponseBody ResponseEntity<String> login(@RequestParam String email, @RequestParam String pass) {
 		Usuario usuario = usuarioRepository.findByEmail(email);
-		
-		
-		
-		if(usuario == null) {
+
+		if (usuario == null) {
 			return ResponseEntity.badRequest().body("No se ha podido encontrar el usuario");
 		}
-		
-		if(usuario.getActivo() == false) {
+
+		if (usuario.getActivo() == false) {
 			return ResponseEntity.badRequest().body("El usuario está desactivado");
 		}
-		
-		if(usuario.getPass().equals(pass)) {
+
+		if (usuario.getPass().equals(pass)) {
 			return new ResponseEntity<>("El email coincide con la contraseña", HttpStatus.OK);
 		} else {
 			return ResponseEntity.badRequest().body("El email existe, pero la contraseña no coincide");
 		}
-		
+
 	}
 
 }

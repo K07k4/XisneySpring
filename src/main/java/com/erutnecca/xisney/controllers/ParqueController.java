@@ -96,7 +96,6 @@ public class ParqueController {
 	public @ResponseBody List<Parque> getParquesDeProvincia(@RequestParam int id) {
 		return parqueRepository.findByIdProvincia(id);
 	}
-	
 
 	// Elimina el parque
 	@DeleteMapping(path = "/delete")

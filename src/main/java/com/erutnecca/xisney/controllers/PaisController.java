@@ -62,7 +62,7 @@ public class PaisController {
 	public @ResponseBody Iterable<Pais> getAllPaises() {
 		return paisRepository.findAll();
 	}
-	
+
 	// Obtiene todas las provincias del país según su ID
 	@GetMapping(path = "/getProvincias")
 	public @ResponseBody List<Provincia> getProvincias(@RequestParam int id) {

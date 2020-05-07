@@ -17,7 +17,7 @@ public class Fecha {
 	public static String actualPrecisa() {
 		return fecha("yyyy-MM-dd HH:mm:ss");
 	}
-	
+
 	public static String actualMuyPrecisa() {
 		return fecha("yyyy-MM-dd HH:mm:ss.SSS");
 	}
@@ -34,6 +34,11 @@ public class Fecha {
 	public static Integer diferenciaDias(Date fechaFin, Date fechaInicio) {
 		long diff = fechaInicio.getTime() - fechaFin.getTime();
 		return (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS) + 1;
+	}
+
+	public static long actualMilisegundos() {
+		Date date = new Date();
+		return date.getTime();
 	}
 
 }

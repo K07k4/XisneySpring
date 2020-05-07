@@ -25,36 +25,37 @@ public class EntradaBlogController {
 
 	// Crea una entrada de blog
 	@PostMapping(path = "/add")
-	public @ResponseBody ResponseEntity<String> addEntradaBlog(@RequestParam String titulo, @RequestParam String contenido) {
+	public @ResponseBody ResponseEntity<String> addEntradaBlog(@RequestParam String titulo,
+			@RequestParam String contenido) {
 
 		EntradaBlog entradaBlog = new EntradaBlog();
 
 		entradaBlog.setIdEntradaBlog(0);
 		String fecha = Fecha.actualPrecisa();
-		
-		if(!titulo.isEmpty()) {
+
+		if (!titulo.isEmpty()) {
 			entradaBlog.setTitulo(titulo);
 		} else {
 			return ResponseEntity.badRequest().body("El título no es válido");
 		}
-		
-		if(!contenido.isEmpty()) {
+
+		if (!contenido.isEmpty()) {
 			entradaBlog.setContenido(contenido);
 		} else {
 			return ResponseEntity.badRequest().body("El contenido no es válido");
 		}
-		
-		if(fecha != null) {
+
+		if (fecha != null) {
 			entradaBlog.setFecha(fecha);
 		} else {
 			return ResponseEntity.badRequest().body("La fecha no se ha generado correctamente");
 		}
-		
+
 		entradaBlogRepository.save(entradaBlog);
-		
+
 		return new ResponseEntity<>("Entrada de blog creada correctamente", HttpStatus.OK);
 	}
-	
+
 	// Obtiene una entrada del blog por ID
 	@GetMapping(path = "/get")
 	public @ResponseBody Optional<EntradaBlog> getEntradaBlog(@RequestParam int id) {
@@ -66,47 +67,46 @@ public class EntradaBlogController {
 	public @ResponseBody Iterable<EntradaBlog> getEntradasBlog() {
 		return entradaBlogRepository.findAll();
 	}
-	
+
 	// Modifica la entrada del blog según su ID
 	@PostMapping(path = "/modificar")
-	public @ResponseBody ResponseEntity<String> modificarEntradaBlog(@RequestParam Integer id, @RequestParam String titulo, @RequestParam String contenido) {
-
+	public @ResponseBody ResponseEntity<String> modificarEntradaBlog(@RequestParam Integer id,
+			@RequestParam String titulo, @RequestParam String contenido) {
 
 		EntradaBlog entradaBlog = entradaBlogRepository.findById(id).orElse(null);
-		
-		if(entradaBlog == null) {
+
+		if (entradaBlog == null) {
 			return ResponseEntity.badRequest().body("No se encuentra la entrada del blog con ID " + id.toString());
 		}
 
-		
-		if(!titulo.isEmpty()) {
+		if (!titulo.isEmpty()) {
 			entradaBlog.setTitulo(titulo);
 		} else {
 			return ResponseEntity.badRequest().body("El título no es válido");
 		}
-		
-		if(!contenido.isEmpty()) {
+
+		if (!contenido.isEmpty()) {
 			entradaBlog.setContenido(contenido);
 		} else {
 			return ResponseEntity.badRequest().body("El contenido no es válido");
 		}
-		
+
 		entradaBlogRepository.save(entradaBlog);
-		
+
 		return new ResponseEntity<>("Entrada de blog modificada correctamente", HttpStatus.OK);
 	}
-	
+
 	// Elimina la entrada del blog según ID
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteEntradaBlog(@RequestParam Integer id) {
-		EntradaBlog entradaBlog= entradaBlogRepository.findById(id).orElse(null);
+		EntradaBlog entradaBlog = entradaBlogRepository.findById(id).orElse(null);
 
-		if(entradaBlog == null) {
+		if (entradaBlog == null) {
 			return ResponseEntity.badRequest().body("No existe la entrada de blog con ID " + id);
 		}
-		
+
 		entradaBlogRepository.delete(entradaBlog);
 		return ResponseEntity.badRequest().body("Entrada de blog eliminada con éxito");
 	}
-	
+
 }

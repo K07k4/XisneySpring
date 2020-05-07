@@ -29,7 +29,7 @@ public class ArchivoController {
 	public @ResponseBody ResponseEntity<String> uploadImagen(@RequestParam("file") MultipartFile multipartFile,
 			@PathVariable("tipo") String tipo, @PathVariable("id") String id) {
 
-		String path = "D:/xisney/" + tipo + "/" + id + ".jpg";
+		String path = "D:/xisney/imagenes" + tipo + "/" + id + ".jpg";
 
 		// Si no es formato .jpg/.jpeg no permitirá almacenarse
 		if (!multipartFile.getContentType().equals("image/jpeg")) {
@@ -61,7 +61,7 @@ public class ArchivoController {
 	@RequestMapping(value = "/imagen/{tipo}/{id}", method = RequestMethod.GET, produces = MediaType.IMAGE_PNG_VALUE)
 	public @ResponseBody byte[] getImagen(@PathVariable("tipo") String tipo, @PathVariable("id") String id) {
 
-		String path = "D:/xisney/" + tipo + "/" + id + ".jpg";
+		String path = "D:/xisney/imagenes" + tipo + "/" + id + ".jpg";
 		File file = null;
 
 		file = new File(path); // Se busca la imagen en el servidor de archivos
@@ -80,7 +80,7 @@ public class ArchivoController {
 	public @ResponseBody ResponseEntity<String> deleteImagen(@PathVariable("tipo") String tipo,
 			@PathVariable("id") String id) {
 
-		String path = "D:/xisney/" + tipo + "/" + id + ".jpg";
+		String path = "D:/xisney/imagenes" + tipo + "/" + id + ".jpg";
 
 		File fileToDelete = new File(path);
 		boolean success = fileToDelete.delete();
@@ -105,7 +105,7 @@ public class ArchivoController {
 			return ResponseEntity.badRequest().body("El email no es válido");
 		}
 
-		// Si no es formato .jpg/.jpeg no permitirá almacenarse
+		// Si no es formato pdf no permitirá almacenarse
 		if (!multipartFile.getContentType().equals("application/pdf")) {
 			return ResponseEntity.badRequest()
 					.body("Sólo se permite formato pdf, no el formato " + multipartFile.getContentType());

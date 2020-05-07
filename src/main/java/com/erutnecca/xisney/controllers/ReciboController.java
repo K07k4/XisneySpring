@@ -1,5 +1,6 @@
 package com.erutnecca.xisney.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,17 +87,30 @@ public class ReciboController {
 
 		double precioFinal = 0.0;
 
+		// Lista de articulos que se van a comprar
+		List<Articulo> articuloList = new ArrayList<>();
+
+		List<Integer> cantidadesList = new ArrayList<>();
+
 		// Busca cada artículo, comprueba que exista y suma el precio por su cantidad
 		for (JsonArticuloRecibo jsonArticuloRecibo : jsonArticulosRecibo) {
 			Articulo articulo = articuloRepository.findById(jsonArticuloRecibo.getIdArticulo()).orElse(null);
 
 			if (jsonArticuloRecibo.getCantidad() <= 0) {
+				reciboRepository.delete(recibo);
 				return ResponseEntity.badRequest().body("La cantidad de cada artículo debe ser mayor que cero");
 			}
 
 			if (articulo == null) {
+				reciboRepository.delete(recibo);
 				return ResponseEntity.badRequest()
 						.body("El artículo con ID [" + jsonArticuloRecibo.getIdArticulo() + "] no existe");
+			}
+
+			if (articulo.getStock() < jsonArticuloRecibo.getCantidad()) {
+				reciboRepository.delete(recibo);
+				return ResponseEntity.badRequest()
+						.body("No hay suficiente stock del articulo con ID " + articulo.getIdArticulo());
 			}
 
 			ArticuloRecibo articuloRecibo = new ArticuloRecibo();
@@ -109,7 +123,15 @@ public class ReciboController {
 
 			articuloReciboRepository.save(articuloRecibo);
 
+			articuloList.add(articulo);
+			cantidadesList.add(articuloRecibo.getCantidad());
+
 			precioFinal += jsonArticuloRecibo.getCantidad() * articulo.getPrecio();
+		}
+
+		for (int i = 0; i < articuloList.size(); i++) {
+			articuloList.get(i).setStock(articuloList.get(i).getStock() - cantidadesList.get(i));
+			articuloRepository.save(articuloList.get(i));
 		}
 
 		recibo.setPrecioTotal(precioFinal);

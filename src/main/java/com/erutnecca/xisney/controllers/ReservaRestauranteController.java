@@ -19,6 +19,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "/reservaRestaurante")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ReservaRestauranteController {
 	@Autowired
 	private final UsuarioRepository usuarioRepository;

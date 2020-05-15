@@ -17,6 +17,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "/espectaculo")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class EspectaculoController {
 	@Autowired
 	private final EspectaculoRepository espectaculoRepository;

@@ -233,8 +233,8 @@ public class UsuarioController {
 		final String EMAIL_TO_CC = "";
 
 		final String EMAIL_SUBJECT = "Recuperación de contraseña";
-		final String EMAIL_TEXT = "Buenas, " + usuario.getNombre() + "\nSu contraseña es: " + usuario.getPass()
-				+ "\n\n\nwww.xisney.com";
+		final String EMAIL_TEXT = "Buenas, " + usuario.getNombre() + "\n\nSu contraseña es: " + usuario.getPass()
+				+ "\n\n\nXisney Team";
 
 		Properties prop = System.getProperties();
 		prop.put("mail.smtp.host", SMTP_SERVER); // optional, defined in SMTPTransport
@@ -278,6 +278,7 @@ public class UsuarioController {
 
 			t.close();
 
+
 		} catch (MessagingException e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body("No se ha podido enviar el email");
@@ -287,21 +288,21 @@ public class UsuarioController {
 	}
 
 	@PostMapping(path = "/login")
-	public @ResponseBody ResponseEntity<String> login(@RequestParam String email, @RequestParam String pass) {
+	public @ResponseBody ResponseEntity<Integer> login(@RequestParam String email, @RequestParam String pass) {
 		Usuario usuario = usuarioRepository.findByEmail(email);
 
 		if (usuario == null) {
-			return ResponseEntity.badRequest().body("No se ha podido encontrar el usuario");
+			return ResponseEntity.status(403).body(-1);
 		}
 
 		if (usuario.getActivo() == false) {
-			return ResponseEntity.badRequest().body("El usuario está desactivado");
+			return ResponseEntity.status(404).body(-1);
 		}
 
 		if (usuario.getPass().equals(pass)) {
-			return new ResponseEntity<>("El email coincide con la contraseña", HttpStatus.OK);
+			return new ResponseEntity<>(usuario.getIdUsuario(), HttpStatus.OK);
 		} else {
-			return ResponseEntity.badRequest().body("El email existe, pero la contraseña no coincide");
+			return ResponseEntity.status(406).body(-1);
 		}
 
 	}

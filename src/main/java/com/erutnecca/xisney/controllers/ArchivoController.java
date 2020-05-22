@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import com.erutnecca.xisney.controllers.util.Checker;
 
 @Controller
 @RequestMapping(path = "/archivo")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ArchivoController {
 
 	// Sube una imagen. El tamaño máximo de transferencia está establecido en
@@ -96,6 +98,7 @@ public class ArchivoController {
 	// Sube el pdf de un cv
 	@PostMapping(path = "/upload/cv")
 	public @ResponseBody ResponseEntity<String> uploadCV(@RequestParam("file") MultipartFile multipartFile,
+			@RequestParam("nombre") String nombre, @RequestParam("apellidos") String apellidos,
 			@RequestParam("email") String email) {
 
 		// Se almacenan los cv en esta carpeta
@@ -113,7 +116,7 @@ public class ArchivoController {
 
 		// El mismo email solo puede almacenar un cv. Si sube otro, se sobreescribe.
 		try {
-			multipartFile.transferTo(new File(path + email + ".pdf"));
+			multipartFile.transferTo(new File(path + nombre + "-" + apellidos + " - " + email + ".pdf"));
 			return new ResponseEntity<>("CV almacenado en: " + path, HttpStatus.OK);
 		} catch (IllegalStateException e) {
 			e.printStackTrace();

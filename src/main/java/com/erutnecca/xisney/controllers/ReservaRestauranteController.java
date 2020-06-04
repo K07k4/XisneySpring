@@ -63,6 +63,7 @@ public class ReservaRestauranteController {
 		// espectáculo
 
 
+		@SuppressWarnings("unused")
 		Date thisFechaReserva;
 		try {
 			thisFechaReserva = Fecha.stringFecha(fechaReserva);

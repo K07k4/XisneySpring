@@ -30,6 +30,8 @@ public class ParqueController {
 	public @ResponseBody ResponseEntity<String> addParque(@RequestParam Integer idPais,
 			@RequestParam Integer idProvincia, @RequestParam String nombre, @RequestParam String direccion) {
 
+		System.out.println("Add parque");
+		
 		Parque parque = new Parque();
 		parque.setIdParque(0);
 
@@ -51,12 +53,14 @@ public class ParqueController {
 	// Obtiene un parque por ID
 	@GetMapping(path = "/get")
 	public @ResponseBody Optional<Parque> getParque(@RequestParam int id) {
+		System.out.println("Get parque " + id);
 		return parqueRepository.findById(id);
 	}
 
 	// Obtiene todos los parques
 	@GetMapping(path = "/all")
 	public @ResponseBody Iterable<Parque> getParques() {
+		System.out.println("Get all parques");
 		return parqueRepository.findAll();
 	}
 
@@ -65,6 +69,7 @@ public class ParqueController {
 	public @ResponseBody ResponseEntity<String> modificarParque(@RequestParam Integer idParque,
 			@RequestParam Integer idPais, @RequestParam Integer idProvincia, @RequestParam String nombre,
 			@RequestParam String direccion) {
+		System.out.println("Modificar parque " + idParque);
 
 		Parque parque = parqueRepository.findById(idParque).orElse(null);
 
@@ -90,18 +95,21 @@ public class ParqueController {
 	// Obtiene los parques de un pais
 	@GetMapping(path = "/parquesDePais")
 	public @ResponseBody List<Parque> getParquesDePais(@RequestParam int id) {
+		System.out.println("Parques de pais " + id);
 		return parqueRepository.findByIdPais(id);
 	}
 
 	// Obtiene los parques de una provincia
 	@GetMapping(path = "/parquesDeProvincia")
 	public @ResponseBody List<Parque> getParquesDeProvincia(@RequestParam int id) {
+		System.out.println("Parques de provincia " + id);
 		return parqueRepository.findByIdProvincia(id);
 	}
 
 	// Elimina el parque
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteParque(@RequestParam Integer id) {
+		System.out.println("Eliminar parque " + id);
 		Parque parque = parqueRepository.findById(id).orElse(null);
 
 		try {

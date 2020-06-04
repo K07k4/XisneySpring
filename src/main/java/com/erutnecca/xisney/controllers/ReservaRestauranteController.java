@@ -37,6 +37,7 @@ public class ReservaRestauranteController {
 	@PostMapping(path = "/add")
 	public @ResponseBody ResponseEntity<String> addReservaRestaurante(@RequestParam Integer idUsuario,
 			@RequestParam Integer idRestaurante, @RequestParam String fechaReserva, @RequestParam Integer personas) {
+		System.out.println("Reserva restaurante");
 		ReservaRestaurante reservaRestaurante = new ReservaRestaurante();
 		Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
 		Restaurante restaurante = restauranteRepository.findById(idRestaurante).orElse(null);
@@ -61,15 +62,6 @@ public class ReservaRestauranteController {
 		// Comprueba que fechaReserva sea correcta y que esté en el rango del
 		// espectáculo
 
-		Date fechaFin;
-		Date fechaInicio;
-		try {
-			fechaInicio = Fecha.stringFecha(restaurante.getFechaInicio());
-			fechaFin = Fecha.stringFecha(restaurante.getFechaFin());
-		} catch (ParseException e) {
-			return ResponseEntity.badRequest()
-					.body("Error al parsear la fecha de cierre del restaurante con ID " + idRestaurante.toString());
-		}
 
 		Date thisFechaReserva;
 		try {
@@ -78,9 +70,7 @@ public class ReservaRestauranteController {
 			return ResponseEntity.badRequest().body("La fecha de reserva no es correcta");
 		}
 
-		if (thisFechaReserva.before(fechaInicio) || thisFechaReserva.after(fechaFin)) {
-			return ResponseEntity.badRequest().body("El restaurante no abre en la fecha seleccionada");
-		}
+
 		reservaRestaurante.setFechaReserva(fechaReserva);
 		reservaRestaurante.setFechaCompra(Fecha.actualPrecisa());
 		reservaRestaurante.setConsumido(false);
@@ -93,30 +83,35 @@ public class ReservaRestauranteController {
 	// [GET] obtener reserva
 	@GetMapping(path = "/get")
 	public @ResponseBody Optional<ReservaRestaurante> getReservaRestaurante(@RequestParam int id) {
+		System.out.println("Get reserva restaurante" + id);
 		return reservaRestauranteRepository.findById(id);
 	}
 
 	// [GET] obtener todas reservas de todos restaurantes
 	@GetMapping(path = "/all")
 	public @ResponseBody Iterable<ReservaRestaurante> getAllReservasAllRestaurantes() {
+		System.out.println("Get all reservas restaurante");
 		return reservaRestauranteRepository.findAll();
 	}
 
 	// [GET] obtener todas las reservas de un restaurante
 	@GetMapping(path = "/getDeRestaurante")
 	public @ResponseBody Iterable<ReservaRestaurante> getAllReservasDeRestaurante(@RequestParam int id) {
+		System.out.println("Get all reservas restaurante " + id);
 		return reservaRestauranteRepository.findByIdRestaurante(id);
 	}
 
 	// [GET] obtener todas reservas de un usuario
 	@GetMapping(path = "/getDeUsuario")
 	public @ResponseBody Iterable<ReservaRestaurante> getAllReservasDeUsuario(@RequestParam int id) {
+		System.out.println("Get all reservas restaurante de usuario " + id);
 		return reservaRestauranteRepository.findByIdUsuario(id);
 	}
 
 	// [POST] consumir reserva
 	@PostMapping(path = "/consumir")
 	public @ResponseBody ResponseEntity<String> consumirReserva(@RequestParam Integer id) {
+		System.out.println("Consumir reserva restaurante " + id);
 		ReservaRestaurante reservaRestaurante = reservaRestauranteRepository.findById(id).orElse(null);
 
 		if (reservaRestaurante == null) {
@@ -135,6 +130,8 @@ public class ReservaRestauranteController {
 	// [DELETE] eliminar reserva
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteReserva(@RequestParam Integer id) {
+		
+		System.out.println("Borrar reserva restaurante " + id);
 
 		ReservaRestaurante reservaRestaurante = reservaRestauranteRepository.findById(id).orElse(null);
 

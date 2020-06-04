@@ -34,6 +34,8 @@ public class EspectaculoController {
 			@RequestParam String nombre, @RequestParam String descripcion, @RequestParam String fechaInicio,
 			@RequestParam String fechaFin) {
 
+		System.out.println("Add espectaculo");
+		
 		Espectaculo espectaculo = new Espectaculo();
 		Parque parque = parqueRepository.findById(idParque).orElse(null);
 
@@ -76,18 +78,21 @@ public class EspectaculoController {
 	// [GET] obtener espectaculo
 	@GetMapping(path = "/get")
 	public @ResponseBody Optional<Espectaculo> getEspectaculo(@RequestParam int id) {
+		System.out.println("Obtener espectaculo con ID: " + id);
 		return espectaculoRepository.findById(id);
 	}
 
 	// [GET] obtener todos
 	@GetMapping(path = "/all")
 	public @ResponseBody Iterable<Espectaculo> getAllEspectaculos() {
+		System.out.println("Obtener todos los espectaculos");
 		return espectaculoRepository.findAll();
 	}
 
 	// [DELETE] eliminar espectaculo
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteEspectaculo(@RequestParam Integer id) {
+		System.out.println("Borrar espectaculo con ID: " + id);
 		Espectaculo espectaculo = espectaculoRepository.findById(id).orElse(null);
 
 		if (espectaculo == null) {

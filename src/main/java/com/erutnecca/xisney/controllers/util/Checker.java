@@ -34,6 +34,10 @@ public class Checker {
 	// Pattern de contraseña (Sin ',\,=, ,%) para proteger la base de datos
 	public static final Pattern PASS_ADDRESS_REGEX = Pattern.compile("^((?!'|\\|=| |%).)*$", Pattern.CASE_INSENSITIVE);
 
+	// Pattern para HH:MM. Acepta con 0 antes y sin él
+	public static final Pattern HOUR_MINUTE_REGEX = Pattern.compile("^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$",
+			Pattern.CASE_INSENSITIVE);
+
 	// Comprueba que el dni sea valido
 	public static boolean dniValido(String dniStr) {
 		boolean flag = false;
@@ -62,6 +66,10 @@ public class Checker {
 	// Comprueba que tenga caracteres validos
 	public static boolean nombreValido(String nombreStr) {
 		return Checker.validar(Checker.NOMBRE_ADDRESS_REGEX, nombreStr);
+	}
+	
+	public static boolean horaValida(String horaStr) {
+		return Checker.validar(Checker.HOUR_MINUTE_REGEX, horaStr);
 	}
 
 	// Comprueba que tenga caracteres validos

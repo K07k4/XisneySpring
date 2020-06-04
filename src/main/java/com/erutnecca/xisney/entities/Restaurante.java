@@ -13,7 +13,7 @@ public class Restaurante {
 
 	private Integer idParque;
 	private String nombre, descripcion;
-	private String fechaInicio, fechaFin;
+	private String inicioTramo1, finTramo1, inicioTramo2, finTramo2;
 
 	public Integer getIdRestaurante() {
 		return idRestaurante;
@@ -47,20 +47,36 @@ public class Restaurante {
 		this.descripcion = descripcion;
 	}
 
-	public String getFechaInicio() {
-		return fechaInicio;
+	public String getInicioTramo1() {
+		return inicioTramo1;
 	}
 
-	public void setFechaInicio(String fechaInicio) {
-		this.fechaInicio = fechaInicio;
+	public void setInicioTramo1(String inicioTramo1) {
+		this.inicioTramo1 = inicioTramo1;
 	}
 
-	public String getFechaFin() {
-		return fechaFin;
+	public String getFinTramo1() {
+		return finTramo1;
 	}
 
-	public void setFechaFin(String fechaFin) {
-		this.fechaFin = fechaFin;
+	public void setFinTramo1(String finTramo1) {
+		this.finTramo1 = finTramo1;
+	}
+
+	public String getInicioTramo2() {
+		return inicioTramo2;
+	}
+
+	public void setInicioTramo2(String inicioTramo2) {
+		this.inicioTramo2 = inicioTramo2;
+	}
+
+	public String getFinTramo2() {
+		return finTramo2;
+	}
+
+	public void setFinTramo2(String finTramo2) {
+		this.finTramo2 = finTramo2;
 	}
 
 }

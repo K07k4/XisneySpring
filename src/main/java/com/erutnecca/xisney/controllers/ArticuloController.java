@@ -47,6 +47,8 @@ public class ArticuloController {
 	public @ResponseBody ResponseEntity<String> addArticulo(@RequestParam Integer idTipoArticulo,
 			@RequestParam String nombre, @RequestParam Double precio, @RequestParam String descripcion,
 			@RequestParam Integer stock) {
+		
+		System.out.println("Crear articulo");
 
 		Articulo articulo = new Articulo();
 		articulo.setIdArticulo(0);
@@ -83,12 +85,14 @@ public class ArticuloController {
 	// Devuelve todos los artículos
 	@GetMapping(path = "/all")
 	public @ResponseBody Iterable<Articulo> getAllArticulos(String nombre) {
+		System.out.println("Get all articulos");
 		return articuloRepository.findAll();
 	}
 
 	// Devuelve un artículo según ID
 	@GetMapping(path = "/get")
 	public @ResponseBody Optional<Articulo> getArticulo(Integer id) {
+		System.out.println("Get articulo " + id);
 		return articuloRepository.findById(id);
 	}
 
@@ -97,6 +101,8 @@ public class ArticuloController {
 			@RequestParam Integer idTipoArticulo, @RequestParam String nombre, @RequestParam Double precio,
 			@RequestParam String descripcion, @RequestParam Integer stock) {
 
+		System.out.println("Modificar articulo " + idArticulo);
+		
 		Articulo articulo = articuloRepository.findById(idArticulo).orElse(null);
 
 		if (articulo == null) {
@@ -132,12 +138,14 @@ public class ArticuloController {
 
 	@GetMapping(path = "/getArticulosPorTipo")
 	public @ResponseBody List<Articulo> getArticulosPorTipo(Integer idTipoArticulo) {
+		System.out.println("Get articulos de tipo " + idTipoArticulo);
 		return articuloRepository.findByIdTipoArticulo(idTipoArticulo);
 	}
 
 	// Elimina el artículo según ID
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteArticulo(@RequestParam Integer id) {
+		System.out.println("Eliminar articulo " + id);
 		Articulo articulo = articuloRepository.findById(id).orElse(null);
 
 		if (articulo == null) {
@@ -151,6 +159,8 @@ public class ArticuloController {
 	@PostMapping(path = "/puntuar")
 	public @ResponseBody ResponseEntity<String> puntuar(@RequestParam("idArticulo") int idArticulo,
 			@RequestParam("idUsuario") int idUsuario, @RequestParam("puntuacion") Double puntuacion) {
+		System.out.println("Puntuar articulo " + idArticulo + " con puntuacion " + puntuacion);
+		
 		boolean puntuado = false;
 
 		if (puntuacion < 0.0 || puntuacion > 5.0) {

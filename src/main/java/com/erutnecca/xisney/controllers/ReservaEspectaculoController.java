@@ -40,6 +40,8 @@ public class ReservaEspectaculoController {
 		ReservaEspectaculo reservaEspectaculo = new ReservaEspectaculo();
 		Usuario usuario = usuarioRepository.findById(idUsuario).orElse(null);
 		Espectaculo espectaculo = espectaculoRepository.findById(idEvento).orElse(null);
+		
+		System.out.println("Reserva de espectaculo");
 
 		// Comprueba que existan usuario y espectáculo
 		if (usuario == null) {
@@ -93,30 +95,35 @@ public class ReservaEspectaculoController {
 	// [GET] obtener reserva
 	@GetMapping(path = "/get")
 	public @ResponseBody Optional<ReservaEspectaculo> getReservaEspectaculo(@RequestParam int id) {
+		System.out.println("Obtener reserva espectaculo con ID " + id);
 		return reservaEspectaculoRepository.findById(id);
 	}
 
 	// [GET] obtener todas reservas de todos espectaculos
 	@GetMapping(path = "/all")
 	public @ResponseBody Iterable<ReservaEspectaculo> getAllReservasAllEspectaculos() {
+		System.out.println("Obtener todas las reservas de todos los espectaculos");
 		return reservaEspectaculoRepository.findAll();
 	}
 
 	// [GET] obtener todas las reservas de un espectaculo
 	@GetMapping(path = "/getDeEspectaculo")
 	public @ResponseBody Iterable<ReservaEspectaculo> getAllReservasDeEspectaculo(@RequestParam int id) {
+		System.out.println("Obtener todas las reservas del espectaculo con ID: " + id);
 		return reservaEspectaculoRepository.findByIdEvento(id);
 	}
 
 	// [GET] obtener todas reservas de un usuario
 	@GetMapping(path = "/getDeUsuario")
 	public @ResponseBody Iterable<ReservaEspectaculo> getAllReservasDeUsuario(@RequestParam int id) {
+		System.out.println("Obtener todas las reservas de usuario con ID: " + id);
 		return reservaEspectaculoRepository.findByIdUsuario(id);
 	}
 
 	// [POST] consumir reserva
 	@PostMapping(path = "/consumir")
 	public @ResponseBody ResponseEntity<String> consumirReserva(@RequestParam Integer id) {
+		System.out.println("Consumir reserva con ID: " + id);
 		ReservaEspectaculo reservaEspectaculo = reservaEspectaculoRepository.findById(id).orElse(null);
 
 		if (reservaEspectaculo == null) {
@@ -136,6 +143,8 @@ public class ReservaEspectaculoController {
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteReserva(@RequestParam Integer id) {
 
+		System.out.println("Eliminar reserva con ID " + id);
+		
 		ReservaEspectaculo reservaEspectaculo = reservaEspectaculoRepository.findById(id).orElse(null);
 
 		if (reservaEspectaculo == null) {

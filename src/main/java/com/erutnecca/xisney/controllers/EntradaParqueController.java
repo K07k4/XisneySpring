@@ -49,6 +49,8 @@ public class EntradaParqueController {
 	public @ResponseBody ResponseEntity<String> addEntradaParque(@RequestParam Integer idUsuario,
 			@RequestParam Integer idTipoOferta, @RequestParam Integer idParque, @RequestParam String fechaInicio,
 			@RequestParam String fechaFin) {
+		
+		System.out.println("Generar entrada parque");
 
 		EntradaParque entradaParque = new EntradaParque();
 		TipoOferta tipoOferta = tipoOfertaRepository.findById(idTipoOferta).orElse(null);
@@ -124,18 +126,21 @@ public class EntradaParqueController {
 	// Obtiene una entrada por ID
 	@GetMapping(path = "/get")
 	public @ResponseBody Optional<EntradaParque> getEntradaParque(@RequestParam int id) {
+		System.out.println("Get entrada parque " + id);
 		return entradaParqueRepository.findById(id);
 	}
 
 	// Obtiene todas las entradas
 	@GetMapping(path = "/all")
 	public @ResponseBody Iterable<EntradaParque> getAllEntradasParque() {
+		System.out.println("Get all entradas parque");
 		return entradaParqueRepository.findAll();
 	}
 
 	// Obtiene todas las entradas
 	@GetMapping(path = "/getDeUsuario")
 	public @ResponseBody Iterable<EntradaParque> getEntradasDeUsuario(@RequestParam int id) {
+		System.out.println("Get all entradas parque usuario " + id);
 		return entradaParqueRepository.findByIdUsuario(id);
 	}
 
@@ -144,6 +149,7 @@ public class EntradaParqueController {
 	@GetMapping(path = "/getConRango")
 	public @ResponseBody Iterable<EntradaParque> getEntradaConRango(@RequestParam String fechaInicio,
 			@RequestParam String fechaFin) {
+		System.out.println("Get rango de entradas");
 		try {
 			@SuppressWarnings("unused")
 			Date fecha1 = Fecha.stringFecha(fechaInicio);
@@ -159,6 +165,8 @@ public class EntradaParqueController {
 	// Consume la entrada, pasando de false a true
 	@PostMapping(path = "/consumir")
 	public @ResponseBody ResponseEntity<String> consumirEntrada(@RequestParam Integer id) {
+		System.out.println("Consumir entrada " + id);
+		
 		EntradaParque entradaParque = entradaParqueRepository.findById(id).orElse(null);
 
 		if (entradaParque == null) {
@@ -178,6 +186,8 @@ public class EntradaParqueController {
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteEntrada(@RequestParam Integer id) {
 
+		System.out.println("Borrar entrada " + id);
+		
 		EntradaParque entradaParque = entradaParqueRepository.findById(id).orElse(null);
 
 		if (entradaParque == null) {

@@ -56,7 +56,6 @@ public class ProvinciaController {
 			return ResponseEntity.badRequest().body("La provincia ya está registrada");
 		}
 
-		System.out.println(provincia);
 		provinciaRepository.save(provincia);
 
 		return new ResponseEntity<>("Provincia creada correctamente", HttpStatus.OK);

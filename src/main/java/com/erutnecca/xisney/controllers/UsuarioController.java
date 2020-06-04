@@ -47,6 +47,8 @@ public class UsuarioController {
 				+ Checker.nombreValido(apellidos) + "\n" + "Email: " + email + " => " + Checker.emailValido(email)
 				+ "\n" + "Fecha de nacimiento: " + fechaNacimiento + " => " + Checker.fechaValida(fechaNacimiento)
 				+ "\n" + "Pass: " + pass + " => " + Checker.passValida(pass);
+		
+		System.out.println("Crear usuario\n" + response);
 
 		// Comprueba si existe el email en la base de datos
 		if (usuarioRepository.findByEmail(email) != null) {
@@ -276,8 +278,6 @@ public class UsuarioController {
 			// send
 			t.sendMessage(msg, msg.getAllRecipients());
 
-			System.out.println("Response: " + t.getLastServerResponse());
-
 			t.close();
 
 
@@ -293,17 +293,23 @@ public class UsuarioController {
 	public @ResponseBody ResponseEntity<Integer> login(@RequestParam String email, @RequestParam String pass) {
 		Usuario usuario = usuarioRepository.findByEmail(email);
 
+		
+		
 		if (usuario == null) {
+			System.out.println("Login incorrecto");
 			return ResponseEntity.status(403).body(-1);
 		}
 
 		if (usuario.getActivo() == false) {
+			System.out.println("Usuario inactivo");
 			return ResponseEntity.status(404).body(-1);
 		}
 
 		if (usuario.getPass().equals(pass)) {
+			System.out.println("Login correcto");
 			return new ResponseEntity<>(usuario.getIdUsuario(), HttpStatus.OK);
 		} else {
+			System.out.println("Login no coincide");
 			return ResponseEntity.status(406).body(-1);
 		}
 

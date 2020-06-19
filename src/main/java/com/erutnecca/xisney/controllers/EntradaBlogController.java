@@ -30,6 +30,8 @@ public class EntradaBlogController {
 	public @ResponseBody ResponseEntity<String> addEntradaBlog(@RequestParam String titulo,
 			@RequestParam String contenido) {
 
+		System.out.println("Crear entrada blog");
+		
 		EntradaBlog entradaBlog = new EntradaBlog();
 
 		entradaBlog.setIdEntradaBlog(0);
@@ -61,12 +63,14 @@ public class EntradaBlogController {
 	// Obtiene una entrada del blog por ID
 	@GetMapping(path = "/get")
 	public @ResponseBody Optional<EntradaBlog> getEntradaBlog(@RequestParam int id) {
+		System.out.println("Get entrada blog " + id);
 		return entradaBlogRepository.findById(id);
 	}
 
 	// Obtiene todos las entradas del blog
 	@GetMapping(path = "/all")
 	public @ResponseBody Iterable<EntradaBlog> getEntradasBlog() {
+		System.out.println("Get todas entradas blog");
 		return entradaBlogRepository.findAll();
 	}
 
@@ -74,6 +78,8 @@ public class EntradaBlogController {
 	@PostMapping(path = "/modificar")
 	public @ResponseBody ResponseEntity<String> modificarEntradaBlog(@RequestParam Integer id,
 			@RequestParam String titulo, @RequestParam String contenido) {
+		
+		System.out.println("Modificar entrada blog " + id);
 
 		EntradaBlog entradaBlog = entradaBlogRepository.findById(id).orElse(null);
 
@@ -101,6 +107,8 @@ public class EntradaBlogController {
 	// Elimina la entrada del blog según ID
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteEntradaBlog(@RequestParam Integer id) {
+		System.out.println("Borrar entrada blog " + id);
+		
 		EntradaBlog entradaBlog = entradaBlogRepository.findById(id).orElse(null);
 
 		if (entradaBlog == null) {

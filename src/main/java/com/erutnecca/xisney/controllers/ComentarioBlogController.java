@@ -41,6 +41,7 @@ public class ComentarioBlogController {
 	@PostMapping(path = "/add")
 	public @ResponseBody ResponseEntity<String> addComentarioBlog(@RequestParam Integer idEntradaBlog,
 			@RequestParam Integer idUsuario, @RequestParam String comentario) {
+		System.out.println("Crear comentario");
 
 		ComentarioBlog comentarioBlog = new ComentarioBlog();
 
@@ -81,17 +82,20 @@ public class ComentarioBlogController {
 	// Obtiene un comentario por ID
 	@GetMapping(path = "/get")
 	public @ResponseBody Optional<ComentarioBlog> getComentarioBlog(@RequestParam int id) {
+		System.out.println("Get comentario " + id);
 		return comentarioBlogRepository.findById(id);
 	}
 
 	// Obtiene todos los comentarios del blog
 	@GetMapping(path = "/all")
 	public @ResponseBody Iterable<ComentarioBlog> getEntradasBlog() {
+		System.out.println("Get all comentarios");
 		return comentarioBlogRepository.findAll();
 	}
 
 	@GetMapping(path = "/getComentariosDeEntrada")
 	public @ResponseBody List<ComentarioBlog> getComentariosDeEntrada(Integer id) {
+		System.out.println("Get all comentarios de entrada " + id);
 		return comentarioBlogRepository.findByIdEntradaBlog(id);
 	}
 
@@ -99,6 +103,8 @@ public class ComentarioBlogController {
 	@PostMapping(path = "/modificar")
 	public @ResponseBody ResponseEntity<String> modificarEntradaBlog(@RequestParam Integer id,
 			@RequestParam String comentario) {
+		
+		System.out.println("Modificar comentario " + id);
 
 		ComentarioBlog comentarioBlog = comentarioBlogRepository.findById(id).orElse(null);
 
@@ -125,6 +131,8 @@ public class ComentarioBlogController {
 	// Elimina el comentario del blog según ID
 	@DeleteMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteComentarioBlog(@RequestParam Integer id) {
+		System.out.println("Borrar comentario " + id);
+		
 		ComentarioBlog comentarioBlog = comentarioBlogRepository.findById(id).orElse(null);
 
 		if (comentarioBlog == null) {

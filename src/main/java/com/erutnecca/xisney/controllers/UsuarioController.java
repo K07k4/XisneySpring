@@ -2,6 +2,7 @@ package com.erutnecca.xisney.controllers;
 
 import java.util.Optional;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,60 +37,68 @@ public class UsuarioController {
 
 	// Añade un usuario
 	@PostMapping(path = "/add")
-	public @ResponseBody ResponseEntity<String> addUsuario(@RequestParam String email, @RequestParam String pass,
+	public @ResponseBody ResponseEntity<Object> addUsuario(@RequestParam String email, @RequestParam String pass,
 			@RequestParam String dni, @RequestParam String nombre, @RequestParam String apellidos,
 			@RequestParam String fechaNacimiento) {
 
+		System.out.println("Registro usuario");
+
 		Usuario usuario = new Usuario();
 
-		String response = "DNI: " + dni + " => " + Checker.dniValido(dni) + "\n" + "Nombre: " + nombre + " => "
-				+ Checker.nombreValido(nombre) + "\n" + "Apellidos: " + apellidos + " => "
-				+ Checker.nombreValido(apellidos) + "\n" + "Email: " + email + " => " + Checker.emailValido(email)
-				+ "\n" + "Fecha de nacimiento: " + fechaNacimiento + " => " + Checker.fechaValida(fechaNacimiento)
-				+ "\n" + "Pass: " + pass + " => " + Checker.passValida(pass);
-		
-		System.out.println("Crear usuario\n" + response);
+		int statusCode = 200;
+
+		JSONObject jsonResponse = new JSONObject();
 
 		// Comprueba si existe el email en la base de datos
 		if (usuarioRepository.findByEmail(email) != null) {
-			return ResponseEntity.badRequest().body("El email " + email + " ya está registrado");
+			jsonResponse.put("email", "registrado");
+			statusCode = 403;
+		} else {
+			jsonResponse.put("email", Checker.emailValido(email));
 		}
 
 		// Comprueba si existe el dni en la base de datos
 		if (usuarioRepository.findByDni(dni) != null) {
-			return ResponseEntity.badRequest().body("El dni " + dni + " ya está registrado");
+			jsonResponse.put("dni", "registrado");
+			statusCode = 403;
+		} else {
+			jsonResponse.put("dni", Checker.dniValido(dni));
 		}
 
-		try {
-			if (Checker.emailValido(email) && Checker.passValida(pass) && Checker.dniValido(dni)
-					&& Checker.nombreValido(nombre) && Checker.nombreValido(apellidos)
-					&& Checker.fechaValida(fechaNacimiento)) {
-				usuario.setIdUsuario(0);
-				usuario.setEmail(email);
-				usuario.setPass(pass);
-				usuario.setDni(dni);
-				usuario.setNombre(nombre);
-				usuario.setApellidos(apellidos);
-				usuario.setFechaNacimiento(fechaNacimiento);
-				usuario.setActivo(true);
+		jsonResponse.put("nombre", Checker.nombreValido(nombre));
+		jsonResponse.put("apellidos", Checker.nombreValido(apellidos));
+		jsonResponse.put("fechaNacimiento", Checker.fechaValida(fechaNacimiento));
+		jsonResponse.put("pass", Checker.passValida(pass));
 
-				usuarioRepository.save(usuario);
-			} else {
-				return ResponseEntity.badRequest().body("No se ha podido crear el usuario\n" + response);
+		if (jsonResponse.toString().contains("false")) { // Comprueba que no haya campos erroneos
+			statusCode = 406;
+		} else if (jsonResponse.toString().contains("registrado")) { // Comprueba que no esté registrado
+			statusCode = 403;
+		} else {
+			usuario.setIdUsuario(0);
+			usuario.setEmail(email);
+			usuario.setPass(pass);
+			usuario.setDni(dni);
+			usuario.setNombre(nombre);
+			usuario.setApellidos(apellidos);
+			usuario.setFechaNacimiento(fechaNacimiento);
+			usuario.setActivo(true);
 
-			}
-
-		} catch (Exception e) {
-			return new ResponseEntity<>("No se ha podido crear el usuario\n" + response, HttpStatus.BAD_REQUEST);
+			usuarioRepository.save(usuario);
 		}
 
-		usuario = usuarioRepository.findByDni(dni);
-		return new ResponseEntity<>("Usuario creado correctamente\n" + usuario.toString(), HttpStatus.OK);
+		System.out.println("Crear usuario\n" + jsonResponse.toMap());
+
+		// Devuelve un json con los campos. True si es válido, false si no.
+		return ResponseEntity.status(statusCode).body(jsonResponse.toMap());
+
 	}
 
 	// Obtiene un usuario por ID
 	@GetMapping(path = "/get")
 	public @ResponseBody Optional<Usuario> getUsuario(@RequestParam int id) {
+		System.out.println("Get usuario " + id);
+
 		return usuarioRepository.findById(id);
 	}
 
@@ -280,7 +289,6 @@ public class UsuarioController {
 
 			t.close();
 
-
 		} catch (MessagingException e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body("No se ha podido enviar el email");
@@ -290,27 +298,52 @@ public class UsuarioController {
 	}
 
 	@PostMapping(path = "/login")
-	public @ResponseBody ResponseEntity<Integer> login(@RequestParam String email, @RequestParam String pass) {
+	public @ResponseBody ResponseEntity<Object> login(@RequestParam String email, @RequestParam String pass) {
 		Usuario usuario = usuarioRepository.findByEmail(email);
 
-		
-		
+		System.out.println("Login");
+
+		JSONObject jsonResponse = new JSONObject();
+
+		int statusCode = 200;
+
 		if (usuario == null) {
-			System.out.println("Login incorrecto");
-			return ResponseEntity.status(403).body(-1);
+			jsonResponse.put("usuario", false);
+			jsonResponse.put("login", false);
+
+			// Si no existe no debería tener campo activo ni id
+			// jsonResponse.put("activo", false);
+			// jsonResponse.put("id", false);
+
+			statusCode = 404;
+			return ResponseEntity.status(statusCode).body(jsonResponse.toMap());
 		}
 
 		if (usuario.getActivo() == false) {
-			System.out.println("Usuario inactivo");
-			return ResponseEntity.status(404).body(-1);
+			jsonResponse.put("usuario", true);
+			jsonResponse.put("login", false);
+			jsonResponse.put("activo", false);
+			jsonResponse.put("id", usuario.getIdUsuario());
+
+			statusCode = 401;
+			return ResponseEntity.status(statusCode).body(jsonResponse.toMap());
 		}
 
 		if (usuario.getPass().equals(pass)) {
-			System.out.println("Login correcto");
-			return new ResponseEntity<>(usuario.getIdUsuario(), HttpStatus.OK);
+			jsonResponse.put("usuario", true);
+			jsonResponse.put("login", true);
+			jsonResponse.put("activo", true);
+			jsonResponse.put("id", usuario.getIdUsuario());
+
+			return ResponseEntity.status(statusCode).body(jsonResponse.toMap());
 		} else {
-			System.out.println("Login no coincide");
-			return ResponseEntity.status(406).body(-1);
+			jsonResponse.put("login", false);
+			jsonResponse.put("usuario", true);
+			jsonResponse.put("activo", true);
+			jsonResponse.put("id", false);
+
+			statusCode = 401;
+			return ResponseEntity.status(statusCode).body(jsonResponse.toMap());
 		}
 
 	}
